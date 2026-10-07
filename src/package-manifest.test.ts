@@ -53,8 +53,8 @@ describe('package identity', () => {
     expect(pkg.name).toBe('@rivalize/mcp');
   });
 
-  it('is version 0.3.1, and the VERSION constant (handshake + User-Agent) agrees', () => {
-    expect(pkg.version).toBe('0.3.1');
+  it('is version 0.3.2, and the VERSION constant (handshake + User-Agent) agrees', () => {
+    expect(pkg.version).toBe('0.3.2');
     expect(VERSION).toBe(pkg.version);
   });
 

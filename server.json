@@ -3,7 +3,7 @@
   "name": "ai.rivalize/rivalize-mcp",
   "title": "Rivalize",
   "description": "Competitive intelligence for agents: competitor teardowns, pricing, ads, reviews and momentum.",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "websiteUrl": "https://rivalize.ai/developers",
   "repository": {
     "url": "https://github.com/Downshift/rivalize-mcp",
@@ -21,7 +21,7 @@
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "@rivalize/mcp",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "runtimeHint": "npx",
       "transport": {
         "type": "stdio"

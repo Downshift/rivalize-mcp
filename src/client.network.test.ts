@@ -153,19 +153,19 @@ describe('HTTPS_PROXY / HTTP_PROXY are honoured', () => {
   });
 });
 
-describe('version 0.3.1 is pinned in one place', () => {
+describe('version 0.3.2 is pinned in one place', () => {
   it('package.json, the VERSION constant and the User-Agent agree', async () => {
     const pkgDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
     const pkg = JSON.parse(readFileSync(path.join(pkgDir, 'package.json'), 'utf8')) as {
       version: string;
       dependencies: Record<string, string>;
     };
-    expect(pkg.version).toBe('0.3.1');
+    expect(pkg.version).toBe('0.3.2');
     expect(VERSION).toBe(pkg.version);
     expect(pkg.dependencies.undici).toMatch(/^\^7\./);
     const fetchImpl = vi.fn(async () => new Response('{"data":[]}', { status: 200 }));
     await new RivalizeClient(CONFIG, fetchImpl as unknown as typeof fetch).listProjects();
     const init = (fetchImpl.mock.calls[0] as unknown[])[1] as RequestInit;
-    expect((init.headers as Record<string, string>)['User-Agent']).toBe('rivalize-mcp/0.3.1');
+    expect((init.headers as Record<string, string>)['User-Agent']).toBe('rivalize-mcp/0.3.2');
   });
 });

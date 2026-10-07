@@ -1,6 +1,6 @@
 {
   "name": "@rivalize/mcp",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "mcpName": "ai.rivalize/rivalize-mcp",
   "description": "Rivalize MCP server — competitive intelligence as agent-callable tools. Tear down any competitor's full strategy (positioning, pricing, ads, social, reviews, hiring, momentum) right in Claude, Claude Code, Cursor, or Codex.",
   "type": "module",

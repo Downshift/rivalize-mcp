@@ -99,7 +99,7 @@ it, the tool does not exist for the client.
 | `list_projects` | read | The projects in your account; returns the `project_id` other tools take | none |
 | `list_reports` | read | Your reports, newest first. Reading never generates a report | `project_id`, `limit` (1-100), `offset` |
 | `get_report` | read | One report as Markdown, whole or one section or one competitor at a time | `report_id` (required), `section`, `competitor`, `page` |
-| `list_competitors` | read | The competitors you track, with threat level and momentum score | `project_id`, `limit` (1-100), `offset` |
+| `list_competitors` | read | The competitors you track, with momentum score, its threat-level band and, where the API provides it, each rival's standing on your Brief | `project_id`, `limit` (1-100), `offset` |
 | `get_competitor_intelligence` | read | Latest stored intelligence for one tracked competitor; a field is present only when it was measured | `competitor_id` (required) |
 | `get_battlecard` | read | Cited sales battlecard for one tracked competitor. Requires a Pro plan | `competitor_id` (required) |
 | `get_strategic_timeline` | read | Evidence-linked timeline of competitor moves across pricing, product, people, funding and content/social | `project_id` (required), `days` (`30`, `90`, `180`), `competitor_id`, `lanes`, `format`, `page` |
@@ -161,7 +161,7 @@ Every response stays under 25,000 characters, and nothing is cut silently:
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `RIVALIZE_API_KEY` | yes | none | Your Rivalize API key. Must start with `rk_live_`; the server exits at startup with a message if it is missing or malformed. |
-| `RIVALIZE_API_URL` | no | `https://rivalize.ai` | Origin of the Rivalize API. A key only works on the server that issued it: leave this unset for rivalize.ai, and for a staging or self-hosted Rivalize set it to that server's origin, or every call returns 401. |
+| `RIVALIZE_API_URL` | no | `https://rivalize.ai` | Origin of the Rivalize API. A key only works on the server that issued it: leave this unset for rivalize.ai, and for a self-hosted or non-production Rivalize server set it to that server's origin, or every call returns 401. |
 | `RIVALIZE_MCP_ALLOW_WRITES` | no | off | `1`, `true` or `yes` (any case) registers `add_competitor`. Any other value, or unset, keeps the server read-only. |
 | `HTTPS_PROXY` / `HTTP_PROXY` | no | none | Route requests through a corporate proxy. Lowercase forms are also read, and `HTTPS_PROXY` wins when both are set. `NO_PROXY` is honoured. Errors name the proxy host, never its credentials. |
 
@@ -289,6 +289,28 @@ npm test           # offline: every API call is mocked or served by a local fixt
 `server.json` is the [MCP Registry](https://registry.modelcontextprotocol.io)
 entry. The tests validate it against the official schema (vendored in
 `schema/`) and check that its name, version and package match `package.json`.
+
+## Changelog
+
+### 0.3.2
+
+- `list_competitors` now tells your assistant how to pick a top competitor:
+  by the rival's standing on your Brief (`brief.standing`) when the API returns
+  it, otherwise by `momentum_score`. `threat_level` is described as what it is,
+  the band of the momentum score, and is no longer offered as a ranking.
+- When a row's standing is still being read (`brief.state` is `deferred`),
+  `list_competitors` asks for the same page again, up to 4 times, 1.5 seconds
+  apart. Against an API that returns no `brief`, it makes one request per call
+  as before.
+- Clearer wording in the 401 hint for a self-hosted or non-production Rivalize
+  server, and in the `add_competitor` description.
+
+### 0.3.1
+
+- The version this repository's history starts from: thirteen read-only
+  tools, the opt-in `add_competitor` write tool, responses kept under 25,000
+  characters with explicit paging, proxy support, and the MCP Registry entry in
+  `server.json`.
 
 ## License
 

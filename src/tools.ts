@@ -151,7 +151,7 @@ function formatError(err: unknown, notFound?: NotFoundCode): ToolResult {
  */
 function unauthorizedHint(err: RivalizeApiError): string {
   const server = err.apiUrl ?? 'the configured server';
-  return ` The key was rejected by ${server}. A Rivalize API key only works on the server that issued it: for a staging or self-hosted Rivalize, set RIVALIZE_API_URL to that server's origin; for rivalize.ai leave RIVALIZE_API_URL unset. Otherwise check that RIVALIZE_API_KEY is a valid, non-revoked rk_live_ key.`;
+  return ` The key was rejected by ${server}. A Rivalize API key only works on the server that issued it: for a self-hosted or non-production Rivalize server, set RIVALIZE_API_URL to that server's origin; for rivalize.ai leave RIVALIZE_API_URL unset. Otherwise check that RIVALIZE_API_KEY is a valid, non-revoked rk_live_ key.`;
 }
 
 /**
@@ -547,6 +547,31 @@ export interface RegisterToolsOptions {
    * RIVALIZE_API_URL so a self-hosted or local server never links to rivalize.ai.
    */
   origin?: string;
+  /**
+   * Milliseconds to wait before `list_competitors` asks again for a page that
+   * has a row whose `brief.state` is `deferred`. Defaults to
+   * LIST_DEFERRED_RETRY_MS; tests pass 0.
+   */
+  deferredRetryMs?: number;
+}
+
+/**
+ * How many more times `list_competitors` asks for the same page while a row's
+ * `brief.state` is `deferred`. The API reads a rival's standing for a few rows
+ * per request and keeps what it read, so asking again fills the row in. An
+ * agent rarely asks again by itself, so the tool does, a bounded number of
+ * times. A server that sends no `brief` never triggers a second request.
+ */
+export const LIST_DEFERRED_RETRIES = 4;
+export const LIST_DEFERRED_RETRY_MS = 1_500;
+
+/** Whether any row on a competitor page has a standing that is still being read. */
+export function hasDeferredRow(page: unknown): boolean {
+  const rows = (page as { data?: unknown } | null)?.data;
+  return (
+    Array.isArray(rows) &&
+    rows.some((row) => (row as { brief?: { state?: unknown } | null } | null)?.brief?.state === 'deferred')
+  );
 }
 
 /**
@@ -874,9 +899,13 @@ Args:
   - limit (number, optional): page size 1-100
   - offset (number, optional): pagination offset (default 0)
 
-Returns JSON: { data: Competitor[], pagination: { total, limit, offset, returned, next_offset } }. Each Competitor includes id, project_id, project_name, name, website, threat_level, momentum_score. Keep paging with offset = pagination.next_offset until it is null.
+Returns JSON: { data: Competitor[], pagination: { total, limit, offset, returned, next_offset } }. Each Competitor includes id, project_id, project_name, name, website, threat_level, momentum_score, and brief where the server provides it. Keep paging with offset = pagination.next_offset until it is null.
 
-To pick the "top" or biggest competitor: highest threat_level first (high > medium > low), then highest momentum_score.
+momentum_score is the rival's momentum score, and threat_level is only that score's band (critical, high, medium, low, or unknown when there is no score): it is not a second assessment, so do not rank by it.
+
+brief, when present, is how the rival stands as your workspace's Brief shows it: brief.standing is "ahead" (the rival is ahead of you), "behind", "even" or "no_read"; brief.standing_label is the Brief's own words; brief.as_of is the date of the report it was read from; brief.state is "read", "not_in_run" (no finished report covered this rival), "no_run", "unreadable" or "deferred" (still being read: the tool asks again a few times before it answers, so a row still "deferred" means call again in a moment).
+
+To pick the "top" or biggest competitor: rank by brief.standing when present ("ahead" first, then "even", then "behind"), otherwise by momentum_score; break ties by highest momentum_score. A rival whose brief.state is not "read" has no standing yet: say so rather than ranking it by standing.
 
 With a competitor's id: get_competitor_intelligence (its latest intelligence), get_battlecard (sales battlecard), get_evidence with its project_id (the sources behind its facts). For what a report said about it: list_reports for the project, then get_report with competitor set to its name. For when it was last observed: get_freshness for its project.
 
@@ -886,11 +915,21 @@ Use when: "which competitors am I tracking?", "who is my top competitor?", or be
     },
     async (args: z.infer<typeof ListCompetitorsSchema>) => {
       try {
-        const res = await client.listCompetitors({
-          projectId: args.project_id,
-          limit: args.limit,
-          offset: args.offset,
-        });
+        const ask = () =>
+          client.listCompetitors({
+            projectId: args.project_id,
+            limit: args.limit,
+            offset: args.offset,
+          });
+        let res = await ask();
+        // A row whose standing is still being read is asked for again, a
+        // bounded number of times; what is still `deferred` after that is
+        // returned as such. Rows without `brief` are never deferred.
+        const retryMs = opts.deferredRetryMs ?? LIST_DEFERRED_RETRY_MS;
+        for (let i = 0; i < LIST_DEFERRED_RETRIES && hasDeferredRow(res); i++) {
+          if (retryMs > 0) await new Promise((resolve) => setTimeout(resolve, retryMs));
+          res = await ask();
+        }
         return asResult(
           normalizeListPage(res as Record<string, unknown>, {
             limit: args.limit,
@@ -1145,7 +1184,7 @@ Use when: "where does that come from?", "show me the sources for <competitor>'s 
     'add_competitor',
     {
       title: 'Add a competitor',
-      description: `Add one or more competitor URLs to a project in your account. This is the two-way write half of the data layer: adding a competitor we have never seen ALSO queues a free Scout universe crawl across 8 intelligence layers, growing the shared universe.
+      description: `Add one or more competitor URLs to a project in your account. This is the two-way write half of the data layer: adding a competitor Rivalize has not seen before ALSO queues a crawl of that company across 8 intelligence layers, which adds it to the Rivalize universe of tracked companies.
 
 Args:
   - project_id (string, required): the project UUID (from list_projects) to add competitors to

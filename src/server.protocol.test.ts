@@ -94,7 +94,7 @@ describe('protocol conformance (real McpServer + real Client)', () => {
     const { client } = await setup();
     const info = client.getServerVersion();
     expect(info?.name).toBe('rivalize-mcp-server');
-    expect(info?.version).toBe('0.3.1');
+    expect(info?.version).toBe('0.3.2');
   });
 
   it('tools/list returns exactly the 13 read tools by default, each with description + object input schema', async () => {

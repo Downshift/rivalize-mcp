@@ -486,7 +486,7 @@ describe('descriptions say what each tool is for and promise only what it return
     const d = description('list_competitors');
     for (const tool of ['get_battlecard', 'get_report', 'get_competitor_intelligence'])
       expect(d).toContain(tool);
-    expect(d).toMatch(/threat_level.*then.*momentum_score/is);
+    expect(d).toMatch(/rank by brief\.standing when present.*otherwise by momentum_score/is);
     expect(d).toContain('next_offset');
   });
 
