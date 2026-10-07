@@ -1,0 +1,17 @@
+# Only package.json, the lockfile, tsconfig.json, src/ and LICENSE are needed.
+node_modules
+dist
+coverage
+.git
+.github
+.vscode
+.idea
+*.log
+.env
+.env.*
+!.env.example
+src/**/*.test.ts
+src/__fixtures__
+schema
+Dockerfile
+.dockerignore

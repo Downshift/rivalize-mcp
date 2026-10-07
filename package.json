@@ -1,0 +1,63 @@
+{
+  "name": "@rivalize/mcp",
+  "version": "0.3.1",
+  "mcpName": "ai.rivalize/rivalize-mcp",
+  "description": "Rivalize MCP server — competitive intelligence as agent-callable tools. Tear down any competitor's full strategy (positioning, pricing, ads, social, reviews, hiring, momentum) right in Claude, Claude Code, Cursor, or Codex.",
+  "type": "module",
+  "bin": {
+    "rivalize-mcp": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "author": "Rivalize <support@rivalize.ai> (https://rivalize.ai)",
+  "homepage": "https://rivalize.ai/developers",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Downshift/rivalize-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Downshift/rivalize-mcp/issues",
+    "email": "support@rivalize.ai"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "competitive-intelligence",
+    "competitor-analysis",
+    "competitor-teardown",
+    "ad-intelligence",
+    "claude",
+    "agent",
+    "ai",
+    "rivalize"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "bun src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "undici": "^7.30.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.5"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

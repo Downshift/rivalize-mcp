@@ -1,0 +1,57 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "ai.rivalize/rivalize-mcp",
+  "title": "Rivalize",
+  "description": "Competitive intelligence for agents: competitor teardowns, pricing, ads, reviews and momentum.",
+  "version": "0.3.1",
+  "websiteUrl": "https://rivalize.ai/developers",
+  "repository": {
+    "url": "https://github.com/Downshift/rivalize-mcp",
+    "source": "github"
+  },
+  "icons": [
+    {
+      "src": "https://rivalize.ai/favicon.svg",
+      "mimeType": "image/svg+xml",
+      "sizes": ["any"]
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@rivalize/mcp",
+      "version": "0.3.1",
+      "runtimeHint": "npx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "RIVALIZE_API_KEY",
+          "description": "Your Rivalize API key (rk_live_...). Create one at rivalize.ai under Settings, API Keys. Free plans get rate-limited reads.",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string",
+          "placeholder": "rk_live_..."
+        },
+        {
+          "name": "RIVALIZE_API_URL",
+          "description": "Origin of the Rivalize API that issued your key. Leave unset for rivalize.ai.",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string",
+          "default": "https://rivalize.ai"
+        },
+        {
+          "name": "RIVALIZE_MCP_ALLOW_WRITES",
+          "description": "Set to 1, true or yes to register add_competitor, which spends credits. Read-only when unset.",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "boolean",
+          "default": "false"
+        }
+      ]
+    }
+  ]
+}
