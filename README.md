@@ -70,6 +70,26 @@ projects:
 }
 ```
 
+### Cline
+
+In Cline, open the **MCP Servers** panel, choose **Configure**, then **Configure MCP Servers**. This opens `cline_mcp_settings.json`. Add:
+
+```json
+{
+  "mcpServers": {
+    "rivalize": {
+      "command": "npx",
+      "args": ["-y", "@rivalize/mcp"],
+      "env": { "RIVALIZE_API_KEY": "rk_live_..." }
+    }
+  }
+}
+```
+
+Save the file. The `rivalize` server appears with a green dot after about 10 to 15 seconds (the first start downloads the package). On Windows, if it does not start, use `"command": "cmd"` and `"args": ["/c", "npx", "-y", "@rivalize/mcp"]`.
+
+If you ask Cline to install it for you, point it at [llms-install.md](./llms-install.md).
+
 ### Any MCP client (stdio)
 
 The server speaks MCP over stdin and stdout. Configure your client to launch:
