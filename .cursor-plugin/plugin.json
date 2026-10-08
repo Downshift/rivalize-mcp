@@ -1,0 +1,22 @@
+{
+  "name": "rivalize",
+  "version": "0.3.2",
+  "description": "Competitive intelligence for your AI assistant: competitor teardowns, pricing, ads, reviews and momentum from Rivalize, each with a date and a source. Read-only by default.",
+  "author": { "name": "Rivalize", "email": "esteban@downshiftit.com" },
+  "homepage": "https://rivalize.ai/?r=mcp-cursor",
+  "repository": "https://github.com/Downshift/rivalize-mcp",
+  "license": "MIT",
+  "keywords": ["mcp", "competitive-intelligence", "competitor-analysis", "market-research", "battlecards", "product-marketing"],
+  "logo": "assets/logo.png",
+  "variables": {
+    "type": "object",
+    "properties": {
+      "RIVALIZE_API_KEY": {
+        "type": "string",
+        "title": "Rivalize API key",
+        "description": "Starts with rk_live_. Create one at rivalize.ai under Dashboard, Settings, API Keys. A free-plan key works."
+      }
+    },
+    "required": ["RIVALIZE_API_KEY"]
+  }
+}

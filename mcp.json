@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "rivalize": {
+      "command": "npx",
+      "args": ["-y", "@rivalize/mcp"],
+      "env": {
+        "RIVALIZE_API_KEY": "${RIVALIZE_API_KEY}"
+      }
+    }
+  }
+}
